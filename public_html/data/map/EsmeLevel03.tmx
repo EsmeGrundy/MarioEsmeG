@@ -50,9 +50,6 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="EnemyEntities">
-  <object name="BadGuy" x="1192" y="284" width="204" height="62"/>
- </objectgroup>
  <objectgroup name="CollectableEntities">
   <object name="Mushroom" x="282" y="704" width="64" height="62"/>
  </objectgroup>
