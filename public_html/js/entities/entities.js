@@ -90,7 +90,7 @@ game.PlayerEntity = me.Entity.extend({
                     this.renderable.setAnimationFrame();
                 }
                 else {
-                    me.state.change(me.state.MENU);
+                    me.state.change(me.state.RESTART);
                 }
             }
         }
@@ -99,6 +99,9 @@ game.PlayerEntity = me.Entity.extend({
             me.game.world.removeChild(response.b);
             this.renderable.setCurrentAnimation("grow", "bigIdle");
         }
+//        else if(){
+//            console.log("You Died!");
+//        }
     }
 });
 
