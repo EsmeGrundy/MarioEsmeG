@@ -10,6 +10,7 @@ game.resources = [
     {name: "restart-screen", type: "image", src: "data/img/MarioRestart.png"},
     {name: "slime", type: "image", src: "data/img/slime-spritesheet.png"},
     {name: "mushroom", type: "image", src: "data/img/mushroom.png"},
+    {name: "star", type: "image", src: "data/img/star.png"},
     /* Atlases 
      * @example
      * {name: "example_tps", type: "tps", src: "data/img/example_tps.json"},
