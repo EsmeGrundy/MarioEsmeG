@@ -14,18 +14,23 @@ game.PlayerEntity = me.Entity.extend({
 
         this.renderable.addAnimation("idle", [3]);
         this.renderable.addAnimation("bigIdle", [19]);
+        this.renderable.addAnimation("starIdle", [43]);
+        this.renderable.addAnimation("fireIdle", [37]);
         //creates an animation for the character walking without powerups called smallwalk
         //adds an array of values 8-13 which are the pictures for the animation
         //80 represents the amount of milliseconds between switching pictures
         this.renderable.addAnimation("smallWalk", [8, 9, 10, 11, 12, 13], 80);
         this.renderable.addAnimation("bigWalk", [14, 15, 16, 17, 18, 19], 80);
+        this.renderable.addAnimation("starSmallWalk", [38, 39, 40, 41, 42, 43], 80);
+        this.renderable.addAnimation("fireSmallWalk", [32, 33, 34, 35, 36, 37], 80);
         this.renderable.addAnimation("shrink", [0, 1, 2, 3], 10);
         this.renderable.addAnimation("grow", [4, 5, 6, 7], 10);
 
 
         //sets a variable for whether we have eaten the mushroom
         this.big = false;
-        
+        this.star = false;
+        this.fire = false;
         //the first number sets the speed mario moves on x axis, the second sets the speed on the y axis
         this.body.setVelocity(5, 20);
         
@@ -68,7 +73,7 @@ game.PlayerEntity = me.Entity.extend({
         //sends collideHandler function hidden parameter "this"
         me.collision.check(this, true, this.collideHandler.bind(this), true);
 
-        if (!this.big) {
+        if (!this.big && !this.star && !this.fire) {
             //checks if mario is moving
             if (this.body.vel.x !== 0) {
                 //checks if animation is already small walk, grow, or shrink
@@ -81,7 +86,7 @@ game.PlayerEntity = me.Entity.extend({
                 this.renderable.setCurrentAnimation("idle");
             }
         }
-        else {
+        else if(this.big) {
             //checks if mario is moving
             if (this.body.vel.x !== 0) {
                 //checks if animation is already big walk, shrink, or grow
@@ -92,6 +97,32 @@ game.PlayerEntity = me.Entity.extend({
             }
             else {
                 this.renderable.setCurrentAnimation("bigIdle");
+            }
+        }
+        else if(this.star){
+                  //checks if mario is moving
+            if (this.body.vel.x !== 0) {
+                //checks if animation is already big walk, shrink, or grow
+                if (!this.renderable.isCurrentAnimation("starSmallWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
+                    this.renderable.setCurrentAnimation("starSmallWalk");
+                    this.renderable.setAnimationFrame();
+                }
+            }
+            else {
+                this.renderable.setCurrentAnimation("starIdle");
+            }
+        }
+        else if(this.fire){
+                      //checks if mario is moving
+            if (this.body.vel.x !== 0) {
+                //checks if animation is already big walk, shrink, or grow
+                if (!this.renderable.isCurrentAnimation("fireSmallWalkSmallWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
+                    this.renderable.setCurrentAnimation("fireSmallWalk");
+                    this.renderable.setAnimationFrame();
+                }
+            }
+            else {
+                this.renderable.setCurrentAnimation("fireIdle");
             }
         }
 
@@ -109,6 +140,9 @@ game.PlayerEntity = me.Entity.extend({
             //checks if the ydif is enough to kill the enemy
             if (ydif <= -115) {
                 //sets the enemy to not alive
+                response.b.alive = false;
+            }
+            else if(this.star){
                 response.b.alive = false;
             }
             else {
@@ -132,6 +166,15 @@ game.PlayerEntity = me.Entity.extend({
             this.renderable.setCurrentAnimation("grow", "bigIdle");
         }
         else if(response.b.type === 'star'){
+            this.star = true;
+            me.game.world.removeChild(response.b);
+        }
+        else if(response.b.type === 'flower'){
+            this.fire = true;
+            me.game.world.removeChild(response.b);
+            if(me.input.isKeyPressed("fireball")){
+                me.game.world.addChild(fireball);
+            }
             
         }
         else if(this.bottom > 300){
@@ -161,7 +204,7 @@ game.LevelTrigger = me.Entity.extend({
 game.BadGuy = me.Entity.extend({
     init: function(x, y, settings) {
         this._super(me.Entity, 'init', [x, y, {
-                image: "slime",
+                image: "frenchie",
                 spritewidth: "60",
                 spriteheight: "28",
                 width: 60,
@@ -249,5 +292,39 @@ game.Star = me.Entity.extend({
             }]);
        me.collision.check(this);
        this.type = "star";
+   } 
+});
+
+game.Flower = me.Entity.extend({
+       init: function(x, y, settings){
+         this._super(me.Entity, 'init', [x, y, {
+                image: "flower",
+                spritewidth: "64",
+                spriteheight: "64",
+                width: 64,
+                height: 64,
+                getShape: function() {
+                    return (new me.Rect(0, 0, 64, 64).toPolygon());
+                }
+            }]);
+       me.collision.check(this);
+       this.type = "flower";
+   } 
+});
+
+game.Fireball = me.Entity.extend({
+          init: function(x, y, settings){
+         this._super(me.Entity, 'init', [x, y, {
+                image: "fireball",
+                spritewidth: "64",
+                spriteheight: "64",
+                width: 64,
+                height: 64,
+                getShape: function() {
+                    return (new me.Rect(0, 0, 64, 64).toPolygon());
+                }
+            }]);
+       me.collision.check(this);
+       this.type = "fireball";
    } 
 });

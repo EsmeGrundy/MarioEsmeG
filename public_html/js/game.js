@@ -43,6 +43,8 @@ var game = {
                 me.pool.register("BadGuy", game.BadGuy);
                 me.pool.register("mushroom", game.Mushroom);
                 me.pool.register("star", game.Star);
+                me.pool.register("flower", game.Flower);
+                me.pool.register("fireball", game.Fireball);
                 
                 me.pool.register("levelTrigger", game.LevelTrigger);
             
