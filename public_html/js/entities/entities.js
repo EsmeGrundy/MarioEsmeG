@@ -1,4 +1,4 @@
-// TODO
+
 game.PlayerEntity = me.Entity.extend({
     init: function(x, y) {
         this._super(me.Entity, 'init', [x, y, {
@@ -29,11 +29,13 @@ game.PlayerEntity = me.Entity.extend({
 
         //sets a variable for whether we have eaten the mushroom
         this.big = false;
+        //sets a variable for if we have run into the star
         this.star = false;
+        //sets a variable for if we have eaten the fire flower
         this.fire = false;
         //the first number sets the speed mario moves on x axis, the second sets the speed on the y axis
         this.body.setVelocity(5, 20);
-        
+
         //makes the screen(viewport) follow mario's position(pos) on both x and y axes
         me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
     },
@@ -86,7 +88,7 @@ game.PlayerEntity = me.Entity.extend({
                 this.renderable.setCurrentAnimation("idle");
             }
         }
-        else if(this.big) {
+        else if (this.big) {
             //checks if mario is moving
             if (this.body.vel.x !== 0) {
                 //checks if animation is already big walk, shrink, or grow
@@ -99,21 +101,23 @@ game.PlayerEntity = me.Entity.extend({
                 this.renderable.setCurrentAnimation("bigIdle");
             }
         }
-        else if(this.star){
-                  //checks if mario is moving
+        //checks if mario has eaten the star
+        else if (this.star) {
+            //checks if mario is moving
             if (this.body.vel.x !== 0) {
-                //checks if animation is already big walk, shrink, or grow
+                //checks if animation is already star walk, shrink, or grow
                 if (!this.renderable.isCurrentAnimation("starSmallWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
                     this.renderable.setCurrentAnimation("starSmallWalk");
                     this.renderable.setAnimationFrame();
-                }
             }
             else {
                 this.renderable.setCurrentAnimation("starIdle");
             }
         }
-        else if(this.fire){
-                      //checks if mario is moving
+    }
+        //checks if mario has eaten the fire flower
+        else if (this.fire) {
+            //checks if mario is moving
             if (this.body.vel.x !== 0) {
                 //checks if animation is already big walk, shrink, or grow
                 if (!this.renderable.isCurrentAnimation("fireSmallWalkSmallWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
@@ -129,7 +133,7 @@ game.PlayerEntity = me.Entity.extend({
 
         this._super(me.Entity, "update", [delta]);
         return true;
-    },
+    },      
     collideHandler: function(response) {
         //sets variable ydif to mario's y position minus the enemy's y position?
         var ydif = this.pos.y - response.b.pos.y;
@@ -142,12 +146,14 @@ game.PlayerEntity = me.Entity.extend({
                 //sets the enemy to not alive
                 response.b.alive = false;
             }
-            else if(this.star){
+            //checks if mario is in invincible mode
+            else if (this.star) {
+                //enemy dies
                 response.b.alive = false;
             }
             else {
                 //checks if mario has eaten the mushroom
-                if(this.big){
+                if (this.big) {
                     //sets mario to small mario again
                     this.big = false;
                     this.body.vel.y -= this.body.accel.x * me.timer.tick;
@@ -160,26 +166,29 @@ game.PlayerEntity = me.Entity.extend({
                 }
             }
         }
+        //checks if mario has eaten the mushroom
         else if (response.b.type === 'mushroom') {
+            //sets a variable to make mario big
             this.big = true;
+            //removes the mushroom
             me.game.world.removeChild(response.b);
+            //sets animation to grow while mario stands still
             this.renderable.setCurrentAnimation("grow", "bigIdle");
         }
-        else if(response.b.type === 'star'){
+        //checks id mario has eaten the star
+        else if (response.b.type === 'star') {
+            //sets variable to make mario invincible
             this.star = true;
+            //removes the star
             me.game.world.removeChild(response.b);
         }
-        else if(response.b.type === 'flower'){
+        //checks if mario has eaten the fire flower
+        else if (response.b.type === 'flower') {
+            //sets variable to power up mario
             this.fire = true;
+            //removes fire flower
             me.game.world.removeChild(response.b);
-            if(me.input.isKeyPressed("fireball")){
-                me.game.world.addChild(fireball);
-            }
-            
-        }
-        else if(this.bottom > 300){
-            console.log("You Died!");
-            me.state.change(me.state.RESTART);
+
         }
     }
 });
@@ -204,7 +213,7 @@ game.LevelTrigger = me.Entity.extend({
 game.BadGuy = me.Entity.extend({
     init: function(x, y, settings) {
         this._super(me.Entity, 'init', [x, y, {
-                image: "frenchie",
+                image: "slime",
                 spritewidth: "60",
                 spriteheight: "28",
                 width: 60,
@@ -225,8 +234,11 @@ game.BadGuy = me.Entity.extend({
 
         this.alwaysUpdate = true;
 
+        //enemy starts off walking right
         this.walkLeft = false;
+        //sets bad guy to alive
         this.alive = true;
+        //sets collision type to badguy
         this.type = "badguy";
 
         this.body.setVelocity(4, 6);
@@ -235,11 +247,16 @@ game.BadGuy = me.Entity.extend({
         this.body.update(delta);
         me.collision.check(this, true, this.collideHandler.bind(this), true);
 
+        //checks if bad guy is alive
         if (this.alive) {
+            //checks the enemy is wlaking left and if it's x position is less than its starting position
             if (this.walkLeft && this.pos.x <= this.startX) {
+                //makes it walk right
                 this.walkLeft = false;
             }
+            //checks the enemy is not walking left and if it's x position is less than its ending position
             else if (!this.walkLeft && this.pos.x >= this.endX) {
+                //makes it wlak right
                 this.walkLeft = true;
             }
 
@@ -250,6 +267,7 @@ game.BadGuy = me.Entity.extend({
 
 
         else {
+            //removes bad guy if they are not alive
             me.game.world.removeChild(this);
         }
 
@@ -273,14 +291,16 @@ game.Mushroom = me.Entity.extend({
                     return (new me.Rect(0, 0, 64, 64).toPolygon());
                 }
             }]);
+        //checks if mario collides with mushroom
         me.collision.check(this);
+        //sets type of collision to mushroom
         this.type = "mushroom";
     }
 });
 
 game.Star = me.Entity.extend({
-   init: function(x, y, settings){
-         this._super(me.Entity, 'init', [x, y, {
+    init: function(x, y, settings) {
+        this._super(me.Entity, 'init', [x, y, {
                 image: "star",
                 spritewidth: "64",
                 spriteheight: "64",
@@ -290,14 +310,16 @@ game.Star = me.Entity.extend({
                     return (new me.Rect(0, 0, 64, 64).toPolygon());
                 }
             }]);
-       me.collision.check(this);
-       this.type = "star";
-   } 
+        //checks if mario collides with star
+        me.collision.check(this);
+        //sets type of collision to star
+        this.type = "star";
+    }
 });
 
 game.Flower = me.Entity.extend({
-       init: function(x, y, settings){
-         this._super(me.Entity, 'init', [x, y, {
+    init: function(x, y, settings) {
+        this._super(me.Entity, 'init', [x, y, {
                 image: "flower",
                 spritewidth: "64",
                 spriteheight: "64",
@@ -307,24 +329,10 @@ game.Flower = me.Entity.extend({
                     return (new me.Rect(0, 0, 64, 64).toPolygon());
                 }
             }]);
-       me.collision.check(this);
-       this.type = "flower";
-   } 
+        //checks if mario collides with flower
+        me.collision.check(this);
+        //sets type of collision to flower
+        this.type = "flower";
+    }
 });
 
-game.Fireball = me.Entity.extend({
-          init: function(x, y, settings){
-         this._super(me.Entity, 'init', [x, y, {
-                image: "fireball",
-                spritewidth: "64",
-                spriteheight: "64",
-                width: 64,
-                height: 64,
-                getShape: function() {
-                    return (new me.Rect(0, 0, 64, 64).toPolygon());
-                }
-            }]);
-       me.collision.check(this);
-       this.type = "fireball";
-   } 
-});

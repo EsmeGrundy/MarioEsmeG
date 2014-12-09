@@ -39,6 +39,7 @@ var game = {
 
 	// Run on game resources loaded.
 	"loaded" : function () {
+            //loads various game resources
                 me.pool.register("mario", game.PlayerEntity, true);
                 me.pool.register("BadGuy", game.BadGuy);
                 me.pool.register("mushroom", game.Mushroom);
@@ -47,7 +48,7 @@ var game = {
                 me.pool.register("fireball", game.Fireball);
                 
                 me.pool.register("levelTrigger", game.LevelTrigger);
-            
+            //creates various states
 		me.state.set(me.state.MENU, new game.TitleScreen());
 		me.state.set(me.state.PLAY, new game.PlayScreen());
                 me.state.set(me.state.RESTART, new game.RestartScreen());

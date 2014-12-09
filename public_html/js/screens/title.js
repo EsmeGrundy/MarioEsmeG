@@ -2,7 +2,8 @@ game.TitleScreen = me.ScreenObject.extend({
 	/**	
 	 *  action to perform on state change
 	 */
-	onResetEvent: function() {	
+	onResetEvent: function() {
+                //sets title screen image to title-screen
 		var titleImage = new me.Sprite(0, 0, me.loader.getImage("title-screen"));
                 me.game.world.addChild(titleImage, -10);
                 me.input.bindKey(me.input.KEY.ENTER, "start");

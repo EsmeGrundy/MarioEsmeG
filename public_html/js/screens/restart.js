@@ -1,6 +1,6 @@
 game.RestartScreen = me.ScreenObject.extend({
     onResetEvent: function() {	
-		var titleImage = new me.Sprite(0, 0, me.loader.getImage("title-screen"));
+		var titleImage = new me.Sprite(0, 0, me.loader.getImage("restart-screen"));
                 me.game.world.addChild(titleImage, -10);
                 me.input.bindKey(me.input.KEY.ENTER, "start");
                 

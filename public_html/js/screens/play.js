@@ -5,12 +5,13 @@ game.PlayScreen = me.ScreenObject.extend({
     onResetEvent: function() {
         // reset the score
         game.data.score = 0;
-
+        
+        //loads the first level when the game starts
         me.levelDirector.loadLevel("EsmeLevel01");
         
         this.resetPlayer(10, 200);
 
-
+        //adds keys to use during game
         me.input.bindKey(me.input.KEY.RIGHT, "right");
         me.input.bindKey(me.input.KEY.LEFT, "left");
         me.input.bindKey(me.input.KEY.UP, "jump")
@@ -30,6 +31,7 @@ game.PlayScreen = me.ScreenObject.extend({
     
     resetPlayer: function(x, y) {
         var player = me.pool.pull("mario", x, y, {});
+        //adds mario in the 5 z position
         me.game.world.addChild(player, 5);
 
     }
